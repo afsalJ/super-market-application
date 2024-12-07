@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import entity.Discount;
 import entity.Item;
 
 public class CustomerService {
@@ -11,6 +12,7 @@ public class CustomerService {
     private Scanner sc;
     private Double billAmount;
     private String bill;
+    Discount discount;
 
     public CustomerService(){
         billAmount = 0d;
@@ -22,6 +24,9 @@ public class CustomerService {
         for(String input: inputs){
             items.add(new Item(input));
         }
+        System.out.print("Discount: ");
+        String discount = sc.nextLine();
+        this.discount = new Discount(discount);
         generateBill();
         System.out.println("Amount to be paid: "+billAmount+" Rs "+bill);
     }
@@ -35,6 +40,26 @@ public class CustomerService {
             billAmount=billAmount+item.getTotalPrice();
         }
 
-        bill  = "[Calculation: "+bill+" = "+billAmount+" RS]";
+        Double discountValue = this.discount.getDiscount(billAmount);
+
+        bill  = "[Calculation: "
+                +bill
+                +(
+                    discountValue!=0d?
+                    (
+                        "="
+                        +billAmount
+                        +" - "
+                        +discountValue
+                        +" "
+                        +discount.getStatement()
+                    )
+                    :""
+                )
+                +" = "
+                +(billAmount-discountValue)
+                +" RS]";
+
+        billAmount = billAmount - discountValue;
     }
 }
